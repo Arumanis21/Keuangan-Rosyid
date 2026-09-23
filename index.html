@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keuangan Rosyid</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#059669">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f3f4f6; color: #1f2937; padding: 15px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 1000px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .header { background: linear-gradient(135deg, #059669, #047857); color: white; padding: 20px; text-align: center; }
+        .header h1 { font-size: 22px; margin-bottom: 4px; }
+        .header p { font-size: 13px; opacity: 0.9; }
+        .filter-section { padding: 16px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .filter-group { display: flex; align-items: center; gap: 10px; }
+        label { font-size: 13px; font-weight: 600; color: #4b5563; }
+        input, select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; width: 100%; }
+        input[type="month"], select { width: auto; min-width: 150px; }
+        .btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-danger:hover { background: #fecaca; }
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; padding: 16px; background: white; border-bottom: 1px solid #e5e7eb; }
+        .card { padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb; }
+        .card-income { background: #ecfdf5; border-color: #a7f3d0; }
+        .card-expense { background: #fef2f2; border-color: #fca5a5; }
+        .card-balance { background: #eff6ff; border-color: #bfdbfe; }
+        .card-title { font-size: 11px; color: #4b5563; font-weight: 700; text-transform: uppercase; }
+        .card-value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+        .text-income { color: #059669; }
+        .text-expense { color: #dc2626; }
+        .text-balance { color: #2563eb; }
+        .main-layout { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 16px; }
+        @media(min-width: 768px) { .main-layout { grid-template-columns: 300px 1fr; } }
+        .form-box { background: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb; height: fit-content; }
+        .form-box h2 { font-size: 15px; margin-bottom: 12px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; }
+        .btn-submit { width: 100%; background: #059669; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-submit:hover { background: #047857; }
+        .history-box h2 { font-size: 15px; margin-bottom: 12px; }
+        .table-container { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; max-height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th { background: #f9fafb; padding: 10px 12px; color: #6b7280; font-weight: 600; border-bottom: 1px solid #e5e7eb; }
+        td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #374151; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .btn-delete { background: #fee2e2; color: #dc2626; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .empty-state { padding: 30px; text-align: center; color: #9ca3af; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Judul Header Website Diubah Menjadi Keuangan Rosyid -->
+        <div class="header">
+            <h1>📊 Keuangan Rosyid</h1>
+            <p>Pencatatan Finansial Harian & Arsip Bulanan</p>
+        </div>
+        <div class="filter-section">
+            <div class="filter-group">
+                <label for="month-filter">Periode:</label>
+                <input type="month" id="month-filter">
+            </div>
+            <button onclick="clearAllData()" class="btn-danger">Reset Data</button>
+        </div>
+        <div class="summary-cards">
+            <div class="card card-income">
+                <div class="card-title">Total Uang Masuk</div>
+                <div id="total-income" class="card-value text-income">Rp 0</div>
+            </div>
+            <div class="card card-expense">
+                <div class="card-title">Total Uang Keluar</div>
+                <div id="total-expense" class="card-value text-expense">Rp 0</div>
+            </div>
+            <div class="card card-balance">
+                <div class="card-title">Sisa Saldo</div>
+                <div id="total-balance" class="card-value text-balance">Rp 0</div>
+            </div>
+        </div>
+        <div class="main-layout">
+            <div class="form-box">
+                <h2>Tambah Transaksi</h2>
+                <form id="finance-form">
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis</label>
+                        <select id="type">
+                            <option value="income">💰 Uang Masuk (+)</option>
+                            <option value="expense">💸 Uang Keluar (-)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Keterangan</label>
+                        <input type="text" id="description" placeholder="Contoh: Gaji, Jajan" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nominal (Rp)</label>
+                        <input type="text" id="amount" placeholder="Contoh: 1.205.000" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Simpan Transaksi</button>
+                </form>
+            </div>
+            <div class="history-box">
+                <h2>Riwayat (<span id="current-view-month">Bulan</span>)</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Keterangan</th>
+                                <th class="text-right">Masuk</th>
+                                <th class="text-right">Keluar</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction-list"></tbody>
+                    </table>
+                    <div id="empty-state" class="empty-state hidden">📭 Tidak ada transaksi.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let transactions = JSON.parse(localStorage.getItem('pwa_finance_db')) || [];
+        const form = document.getElementById('finance-form'), dateInput = document.getElementById('date'), descriptionInput = document.getElementById('description'), amountInput = document.getElementById('amount'), typeInput = document.getElementById('type'), transactionList = document.getElementById('transaction-list'), emptyState = document.getElementById('empty-state'), monthFilter = document.getElementById('month-filter'), currentViewMonthText = document.getElementById('current-view-month');
+        
+        const now = new Date(), currentYear = now.getFullYear(), currentMonth = String(now.getMonth() + 1).padStart(2, '0'), currentDay = String(now.getDate()).padStart(2, '0');
+        monthFilter.value = `${currentYear}-${currentMonth}`; dateInput.value = `${currentYear}-${currentMonth}-${currentDay}`;
+
+        function formatRupiah(num) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num); }
+        function getIndonesianMonth(str) { if (!str) return ""; const [y, m] = str.split('-'); return new Date(y, m - 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }); }
+        
+        amountInput.addEventListener('input', function() {
+            let val = this.value.replace(/\D/g, '');
+            this.value = val ? new Intl.NumberFormat('id-ID').format(val) : '';
+        });
+
+        function updateUI() {
+            const activeMonth = monthFilter.value;
+            currentViewMonthText.innerText = getIndonesianMonth(activeMonth);
+            transactionList.innerHTML = '';
+            let inc = 0, exp = 0;
+            const filtered = transactions.filter(item => item.date.substring(0, 7) === activeMonth).sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            if (filtered.length === 0) emptyState.classList.remove('hidden'); else emptyState.classList.add('hidden');
+            
+            filtered.forEach((tx) => {
+                const isInc = tx.type === 'income';
+                if (isInc) inc += tx.amount; else exp += tx.amount;
+                const d = new Date(tx.date), showD = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
+                const row = document.createElement('tr');
