@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bukukas-v1';
+const CACHE_NAME = 'keuangan-rosyid-v2';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (e) => {
