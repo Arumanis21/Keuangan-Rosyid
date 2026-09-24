@@ -183,6 +183,14 @@
     .item-tr .date { font-size: 11px; color: #999; margin-top: 2px; }
     .item-tr .amount.masuk { color: #2ecc71; font-weight: bold; }
     .item-tr .amount.keluar { color: #e74c3c; font-weight: bold; }
+    .btn-delete {
+      background: none;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+    }
     .empty-state { 
       text-align: center; 
       color: #999; 
@@ -245,7 +253,7 @@
         <input type="text" id="tx-desc" placeholder="Contoh: Gaji bulanan, Jajan sore" required>
         
         <label>Nominal (Rp)</label>
-        <input type="number" id="tx-nominal" placeholder="Contoh: 1205000" required>
+        <input type="number" id="tx-nominal" placeholder="Contoh: 1.205.000" required>
         
         <button type="submit" class="btn-submit">Simpan Transaksi</button>
       </form>
@@ -259,6 +267,15 @@
   </div>
 
   <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW Registered'))
+          .catch(err => console.log('SW Failed', err));
+      });
+    }
+
     // Inisialisasi Database Internal Browser (LocalStorage)
     let transactions = JSON.parse(localStorage.getItem('rosyid_finance_data')) || [];
     let currentFilter = 'hari';
@@ -299,6 +316,13 @@
       renderDashboard();
     }
 
+    // Fungsi Tambahan untuk Hapus Transaksi
+    function deleteTransaction(id) {
+      transactions = transactions.filter(t => t.id !== id);
+      localStorage.setItem('rosyid_finance_data', JSON.stringify(transactions));
+      renderDashboard();
+    }
+
     // 4. Logika Pengendali Tombol Navigasi Filter
     function switchFilter(filterType) {
       currentFilter = filterType;
@@ -310,23 +334,7 @@
     // 5. Fungsi Render Menampilkan Komponen Data di Layar
     function renderDashboard() {
       const todayObj = new Date();
-      const todayStr = todayObj.toISOString().split('T')[0]; // Format YYYY-MM-DD
-      const thisMonthStr = todayStr.substring(0, 7); // Format YYYY-MM
+      const todayStr = todayObj.toISOString().split('T')[0]; 
+      const thisMonthStr = todayStr.substring(0, 7); 
       
       let filtered = [];
-      if (currentFilter === 'hari') {
-        filtered = transactions.filter(t => t.date === todayStr);
-        document.getElementById('analysis-wrapper').style.display = 'none';
-      } else if (currentFilter === 'bulan') {
-        filtered = transactions.filter(t => t.date.startsWith(thisMonthStr));
-        document.getElementById('analysis-wrapper').style.display = 'none';
-      } else {
-        filtered = transactions;
-        document.getElementById('analysis-wrapper').style.display = 'block';
-        renderChartAndAnalysis();
-      }
-
-      // Hitung Total 2 Kotak Atas
-      let totalMasuk = 0;
-      let totalKeluar = 0;
-      filtered.forEach(t => {
