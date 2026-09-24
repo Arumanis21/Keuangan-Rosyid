@@ -8,47 +8,83 @@
     <meta name="theme-color" content="#059669">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f3f4f6; color: #1f2937; padding: 15px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 1000px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .header { background: linear-gradient(135deg, #059669, #047857); color: white; padding: 20px; text-align: center; }
-        .header h1 { font-size: 22px; margin-bottom: 4px; }
-        .header p { font-size: 13px; opacity: 0.9; }
-        .filter-section { padding: 16px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .filter-group { display: flex; align-items: center; gap: 10px; }
-        label { font-size: 13px; font-weight: 600; color: #4b5563; }
-        input, select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; width: 100%; }
-        input[type="month"], select { width: auto; min-width: 150px; }
-        .btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .btn-danger:hover { background: #fecaca; }
-        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; padding: 16px; background: white; border-bottom: 1px solid #e5e7eb; }
-        .card { padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb; }
-        .card-income { background: #ecfdf5; border-color: #a7f3d0; }
-        .card-expense { background: #fef2f2; border-color: #fca5a5; }
-        .card-balance { background: #eff6ff; border-color: #bfdbfe; }
-        .card-title { font-size: 11px; color: #4b5563; font-weight: 700; text-transform: uppercase; }
-        .card-value { font-size: 20px; font-weight: 700; margin-top: 4px; }
-        .text-income { color: #059669; }
-        .text-expense { color: #dc2626; }
-        .text-balance { color: #2563eb; }
-        .main-layout { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 16px; }
-        @media(min-width: 768px) { .main-layout { grid-template-columns: 300px 1fr; } }
-        .form-box { background: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb; height: fit-content; }
-        .form-box h2 { font-size: 15px; margin-bottom: 12px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; }
-        .btn-submit { width: 100%; background: #059669; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-        .btn-submit:hover { background: #047857; }
-        .history-box h2 { font-size: 15px; margin-bottom: 12px; }
-        .table-container { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; max-height: 400px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-        th { background: #f9fafb; padding: 10px 12px; color: #6b7280; font-weight: 600; border-bottom: 1px solid #e5e7eb; }
-        td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #374151; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .btn-delete { background: #fee2e2; color: #dc2626; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-        .empty-state { padding: 30px; text-align: center; color: #9ca3af; }
-        .hidden { display: none !important; }
+        /* Pilihan Warna Modern & Font */
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    background-color: #f8fafc; /* Abu-abu sangat muda agar bersih */
+    color: #334155;
+}
+
+/* Header yang lebih elegan */
+.header {
+    background: linear-gradient(135deg, #115e59, #0f766e); /* Gradasi hijau teal/emerald mewah */
+    border-radius: 0 0 24px 24px; /* Sudut bawah melengkung halus */
+    padding: 25px 20px;
+    box-shadow: 0 4px 20px rgba(15, 118, 110, 0.15);
+}
+
+/* Kartu Ringkasan (Uang Masuk & Keluar) */
+.card-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Membagi 2 kolom sejajar agar lebih ringkas di HP */
+    gap: 12px;
+    padding: 15px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 16px; /* Sudut melengkung modern */
+    padding: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Bayangan sangat halus */
+    transition: transform 0.2s;
+}
+
+/* Warna aksen khusus kartu */
+.card.uang-masuk {
+    border-left: 4px solid #10b981; /* Garis hijau di samping */
+}
+.card.uang-keluar {
+    border-left: 4px solid #ef4444; /* Garis merah di samping */
+}
+
+/* Form Tambah Transaksi */
+.form-container {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    transition: all 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #0f766e;
+    background-color: #ffffff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+/* Tombol Kirim/Simpan */
+.btn-submit {
+    background-color: #0f766e;
+    color: white;
+    font-weight: 600;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
+}
+
     </style>
 </head>
 <body>
@@ -74,10 +110,7 @@
                 <div class="card-title">Total Uang Keluar</div>
                 <div id="total-expense" class="card-value text-expense">Rp 0</div>
             </div>
-            <div class="card card-balance">
-                <div class="card-title">Sisa Saldo</div>
-                <div id="total-balance" class="card-value text-balance">Rp 0</div>
-            </div>
+            
         </div>
         <div class="main-layout">
             <div class="form-box">
