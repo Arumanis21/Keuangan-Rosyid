@@ -1,189 +1,332 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keuangan Rosyid</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#059669">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <style>
-        /* Pilihan Warna Modern & Font */
-body {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-    background-color: #f8fafc; /* Abu-abu sangat muda agar bersih */
-    color: #334155;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keuangan Rosyid</title>
+  <link rel="manifest" href="manifest.json">
+  <!-- Pustaka Chart.js untuk grafik tren naik-turun -->
+  <script src="https://jsdelivr.net"></script>
+  <style>
+    :root { 
+      --primary: #004d40; 
+      --bg: #f4f7f6; 
+      --text: #333; 
+    }
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      margin: 0; 
+      background: var(--bg); 
+      color: var(--text); 
+      padding-bottom: 30px; 
+    }
+    .header { 
+      background: var(--primary); 
+      color: white; 
+      padding: 25px 20px; 
+      border-bottom-left-radius: 20px; 
+      border-bottom-right-radius: 20px; 
+      text-align: center; 
+    }
+    .header h1 { 
+      margin: 0; 
+      font-size: 22px; 
+    }
+    .header p { 
+      margin: 5px 0 0; 
+      font-size: 14px; 
+      opacity: 0.8; 
+    }
+    
+    .container { 
+      padding: 15px; 
+      max-width: 500px; 
+      margin: auto; 
+    }
+    
+    /* Tombol Navigasi Filter Waktu */
+    .filter-nav { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 15px; 
+      background: white; 
+      padding: 5px; 
+      border-radius: 10px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    }
+    .filter-nav button { 
+      flex: 1; 
+      background: none; 
+      border: none; 
+      padding: 10px; 
+      font-weight: bold; 
+      color: #666; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      transition: 0.3s; 
+    }
+    .filter-nav button.active { 
+      background: var(--primary); 
+      color: white; 
+    }
 
-/* Header yang lebih elegan */
-.header {
-    background: linear-gradient(135deg, #115e59, #0f766e); /* Gradasi hijau teal/emerald mewah */
-    border-radius: 0 0 24px 24px; /* Sudut bawah melengkung halus */
-    padding: 25px 20px;
-    box-shadow: 0 4px 20px rgba(15, 118, 110, 0.15);
-}
+    /* 2 Kotak Utama Totalan */
+    .grid-summary { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 12px; 
+      margin-bottom: 20px; 
+    }
+    .card { 
+      background: white; 
+      padding: 15px; 
+      border-radius: 12px; 
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
+      text-align: center; 
+      border-top: 4px solid #ccc; 
+    }
+    .card.masuk { border-top-color: #2ecc71; }
+    .card.keluar { border-top-color: #e74c3c; }
+    .card h3 { 
+      margin: 0; 
+      font-size: 13px; 
+      color: #777; 
+      text-transform: uppercase; 
+    }
+    .card p { 
+      margin: 8px 0 0; 
+      font-size: 16px; 
+      font-weight: bold; 
+      color: #222; 
+    }
 
-/* Kartu Ringkasan (Uang Masuk & Keluar) */
-.card-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Membagi 2 kolom sejajar agar lebih ringkas di HP */
-    gap: 12px;
-    padding: 15px;
-}
+    /* Area Grafik & Analisis Otomatis */
+    .analysis-section { 
+      background: white; 
+      padding: 15px; 
+      border-radius: 12px; 
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
+      margin-bottom: 20px; 
+      display: none; 
+    }
+    .analysis-text { 
+      background: #e8f5e9; 
+      padding: 12px; 
+      border-radius: 8px; 
+      font-size: 13px; 
+      color: #2e7d32; 
+      line-height: 1.5; 
+      margin-top: 15px; 
+      border-left: 4px solid #2e7d32; 
+    }
 
-.card {
-    background: #ffffff;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    border-radius: 16px; /* Sudut melengkung modern */
-    padding: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Bayangan sangat halus */
-    transition: transform 0.2s;
-}
-
-/* Warna aksen khusus kartu */
-.card.uang-masuk {
-    border-left: 4px solid #10b981; /* Garis hijau di samping */
-}
-.card.uang-keluar {
-    border-left: 4px solid #ef4444; /* Garis merah di samping */
-}
-
-/* Form Tambah Transaksi */
-.form-container {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 20px;
-    margin: 15px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-}
-
-input, select {
-    width: 100%;
-    padding: 12px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    background-color: #f8fafc;
-    transition: all 0.3s;
-}
-
-input:focus, select:focus {
-    border-color: #0f766e;
-    background-color: #ffffff;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
-}
-
-/* Tombol Kirim/Simpan */
-.btn-submit {
-    background-color: #0f766e;
-    color: white;
-    font-weight: 600;
-    padding: 14px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
-}
-
-    </style>
+    /* Judul Bagian */
+    .section-title { 
+      font-size: 16px; 
+      font-weight: bold; 
+      margin: 20px 0 10px; 
+      color: var(--primary); 
+    }
+    
+    /* Formulir Input Transaksi */
+    .form-group { 
+      background: white; 
+      padding: 15px; 
+      border-radius: 12px; 
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
+      margin-bottom: 20px; 
+    }
+    .form-group label { 
+      display: block; 
+      font-size: 13px; 
+      font-weight: bold; 
+      margin-bottom: 5px; 
+      color: #555; 
+    }
+    .form-group input, .form-group select { 
+      width: 100%; 
+      padding: 10px; 
+      margin-bottom: 12px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      box-sizing: border-box; 
+    }
+    .btn-submit { 
+      width: 100%; 
+      background: var(--primary); 
+      color: white; 
+      border: none; 
+      padding: 12px; 
+      border-radius: 8px; 
+      font-weight: bold; 
+      cursor: pointer; 
+      font-size: 15px; 
+    }
+    
+    /* List Riwayat Transaksi */
+    .transaction-list { 
+      background: white; 
+      padding: 10px; 
+      border-radius: 12px; 
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
+    }
+    .item-tr { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: 12px 8px; 
+      border-bottom: 1px solid #eee; 
+      font-size: 14px; 
+    }
+    .item-tr:last-child { border-bottom: none; }
+    .item-tr .desc { font-weight: 500; }
+    .item-tr .date { font-size: 11px; color: #999; margin-top: 2px; }
+    .item-tr .amount.masuk { color: #2ecc71; font-weight: bold; }
+    .item-tr .amount.keluar { color: #e74c3c; font-weight: bold; }
+    .empty-state { 
+      text-align: center; 
+      color: #999; 
+      padding: 20px; 
+      font-size: 14px; 
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Judul Header Website Diubah Menjadi Keuangan Rosyid -->
-        <div class="header">
-            <h1>📊 Keuangan Rosyid</h1>
-            <p>Pencatatan Finansial Harian & Arsip Bulanan</p>
-        </div>
-        <div class="filter-section">
-            <div class="filter-group">
-                <label for="month-filter">Periode:</label>
-                <input type="month" id="month-filter">
-            </div>
-            <button onclick="clearAllData()" class="btn-danger">Reset Data</button>
-        </div>
-        <div class="summary-cards">
-            <div class="card card-income">
-                <div class="card-title">Total Uang Masuk</div>
-                <div id="total-income" class="card-value text-income">Rp 0</div>
-            </div>
-            <div class="card card-expense">
-                <div class="card-title">Total Uang Keluar</div>
-                <div id="total-expense" class="card-value text-expense">Rp 0</div>
-            </div>
-            
-        </div>
-        <div class="main-layout">
-            <div class="form-box">
-                <h2>Tambah Transaksi</h2>
-                <form id="finance-form">
-                    <div class="form-group">
-                        <label>Tanggal</label>
-                        <input type="date" id="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Jenis</label>
-                        <select id="type">
-                            <option value="income">💰 Uang Masuk (+)</option>
-                            <option value="expense">💸 Uang Keluar (-)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Keterangan</label>
-                        <input type="text" id="description" placeholder="Contoh: Gaji, Jajan" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Nominal (Rp)</label>
-                        <input type="text" id="amount" placeholder="Contoh: 1.205.000" required>
-                    </div>
-                    <button type="submit" class="btn-submit">Simpan Transaksi</button>
-                </form>
-            </div>
-            <div class="history-box">
-                <h2>Riwayat (<span id="current-view-month">Bulan</span>)</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tanggal</th>
-                                <th>Keterangan</th>
-                                <th class="text-right">Masuk</th>
-                                <th class="text-right">Keluar</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transaction-list"></tbody>
-                    </table>
-                    <div id="empty-state" class="empty-state hidden">📭 Tidak ada transaksi.</div>
-                </div>
-            </div>
-        </div>
+
+  <!-- Bagian Header Utama -->
+  <div class="header">
+    <h1 id="greeting-text">Selamat, Rosyid</h1>
+    <p>Selamat menabung, pria tangguh</p>
+  </div>
+
+  <div class="container">
+    <!-- Filter Navigasi Waktu -->
+    <div class="filter-nav">
+      <button id="btn-hari" class="active" onclick="switchFilter('hari')">Hari</button>
+      <button id="btn-bulan" onclick="switchFilter('bulan')">Bulan</button>
+      <button id="btn-semua" onclick="switchFilter('semua')">Semua</button>
     </div>
-    <script>
-        let transactions = JSON.parse(localStorage.getItem('pwa_finance_db')) || [];
-        const form = document.getElementById('finance-form'), dateInput = document.getElementById('date'), descriptionInput = document.getElementById('description'), amountInput = document.getElementById('amount'), typeInput = document.getElementById('type'), transactionList = document.getElementById('transaction-list'), emptyState = document.getElementById('empty-state'), monthFilter = document.getElementById('month-filter'), currentViewMonthText = document.getElementById('current-view-month');
-        
-        const now = new Date(), currentYear = now.getFullYear(), currentMonth = String(now.getMonth() + 1).padStart(2, '0'), currentDay = String(now.getDate()).padStart(2, '0');
-        monthFilter.value = `${currentYear}-${currentMonth}`; dateInput.value = `${currentYear}-${currentMonth}-${currentDay}`;
 
-        function formatRupiah(num) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num); }
-        function getIndonesianMonth(str) { if (!str) return ""; const [y, m] = str.split('-'); return new Date(y, m - 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }); }
-        
-        amountInput.addEventListener('input', function() {
-            let val = this.value.replace(/\D/g, '');
-            this.value = val ? new Intl.NumberFormat('id-ID').format(val) : '';
-        });
+    <!-- Tampilan 2 Kotak Saldo -->
+    <div class="grid-summary">
+      <div class="card masuk">
+        <h3>Total Uang Masuk</h3>
+        <p id="total-masuk">Rp 0</p>
+      </div>
+      <div class="card keluar">
+        <h3>Total Uang Keluar</h3>
+        <p id="total-keluar">Rp 0</p>
+      </div>
+    </div>
 
-        function updateUI() {
-            const activeMonth = monthFilter.value;
-            currentViewMonthText.innerText = getIndonesianMonth(activeMonth);
-            transactionList.innerHTML = '';
-            let inc = 0, exp = 0;
-            const filtered = transactions.filter(item => item.date.substring(0, 7) === activeMonth).sort((a,b) => new Date(a.date) - new Date(b.date));
-            
-            if (filtered.length === 0) emptyState.classList.remove('hidden'); else emptyState.classList.add('hidden');
-            
-            filtered.forEach((tx) => {
-                const isInc = tx.type === 'income';
-                if (isInc) inc += tx.amount; else exp += tx.amount;
-                const d = new Date(tx.date), showD = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
-                const row = document.createElement('tr');
+    <!-- Grafik dan Analisis Tren Bulanan (Hanya aktif ketika tombol 'Semua' diklik) -->
+    <div id="analysis-wrapper" class="analysis-section">
+      <div class="section-title" style="margin-top:0;">Ringkasan Tabungan Masuk dan Keluar</div>
+      <canvas id="trendChart" style="width: 100%; height: 200px;"></canvas>
+      <div id="analysis-text-box" class="analysis-text">
+        Menganalisis pergerakan saldo bulanan Anda...
+      </div>
+    </div>
+
+    <!-- Formulir Input Tambah Data -->
+    <div class="section-title">Tambah Transaksi</div>
+    <div class="form-group">
+      <form id="tx-form" onsubmit="saveTransaction(event)">
+        <label>Tanggal</label>
+        <input type="date" id="tx-date" required>
+        
+        <label>Jenis</label>
+        <select id="tx-type">
+          <option value="masuk">💰 Uang Masuk (+)</option>
+          <option value="keluar">💸 Uang Keluar (-)</option>
+        </select>
+        
+        <label>Keterangan</label>
+        <input type="text" id="tx-desc" placeholder="Contoh: Gaji bulanan, Jajan sore" required>
+        
+        <label>Nominal (Rp)</label>
+        <input type="number" id="tx-nominal" placeholder="Contoh: 1205000" required>
+        
+        <button type="submit" class="btn-submit">Simpan Transaksi</button>
+      </form>
+    </div>
+
+    <!-- Riwayat Data Log Transaksi -->
+    <div class="section-title">Data Transaksi Riwayat</div>
+    <div id="transaction-container" class="transaction-list">
+      <!-- Data log harian otomatis muncul di sini -->
+    </div>
+  </div>
+
+  <script>
+    // Inisialisasi Database Internal Browser (LocalStorage)
+    let transactions = JSON.parse(localStorage.getItem('rosyid_finance_data')) || [];
+    let currentFilter = 'hari';
+    let myChart = null;
+
+    // 1. Fungsi Mengatur Ucapan Sesuai Waktu HP
+    function initGreeting() {
+      const hours = new Date().getHours();
+      let greeting = "Selamat Malam, Rosyid";
+      
+      if (hours >= 5 && hours < 11) greeting = "Selamat Pagi, Rosyid";
+      else if (hours >= 11 && hours < 15) greeting = "Selamat Siang, Rosyid";
+      else if (hours >= 15 && hours < 18) greeting = "Selamat Sore, Rosyid";
+      
+      document.getElementById('greeting-text').innerText = greeting;
+      document.getElementById('tx-date').valueAsDate = new Date();
+    }
+
+    // 2. Format Konversi ke Mata Uang Rupiah
+    function formatRupiah(angka) {
+      return 'Rp ' + parseInt(angka).toLocaleString('id-ID');
+    }
+
+    // 3. Fungsi Menyimpan Data Transaksi Baru
+    function saveTransaction(e) {
+      e.preventDefault();
+      const date = document.getElementById('tx-date').value;
+      const type = document.getElementById('tx-type').value;
+      const desc = document.getElementById('tx-desc').value;
+      const nominal = parseFloat(document.getElementById('tx-nominal').value);
+
+      transactions.push({ id: Date.now(), date, type, desc, nominal });
+      localStorage.setItem('rosyid_finance_data', JSON.stringify(transactions));
+      
+      document.getElementById('tx-desc').value = '';
+      document.getElementById('tx-nominal').value = '';
+      
+      renderDashboard();
+    }
+
+    // 4. Logika Pengendali Tombol Navigasi Filter
+    function switchFilter(filterType) {
+      currentFilter = filterType;
+      document.querySelectorAll('.filter-nav button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`btn-${filterType}`).classList.add('active');
+      renderDashboard();
+    }
+
+    // 5. Fungsi Render Menampilkan Komponen Data di Layar
+    function renderDashboard() {
+      const todayObj = new Date();
+      const todayStr = todayObj.toISOString().split('T')[0]; // Format YYYY-MM-DD
+      const thisMonthStr = todayStr.substring(0, 7); // Format YYYY-MM
+      
+      let filtered = [];
+      if (currentFilter === 'hari') {
+        filtered = transactions.filter(t => t.date === todayStr);
+        document.getElementById('analysis-wrapper').style.display = 'none';
+      } else if (currentFilter === 'bulan') {
+        filtered = transactions.filter(t => t.date.startsWith(thisMonthStr));
+        document.getElementById('analysis-wrapper').style.display = 'none';
+      } else {
+        filtered = transactions;
+        document.getElementById('analysis-wrapper').style.display = 'block';
+        renderChartAndAnalysis();
+      }
+
+      // Hitung Total 2 Kotak Atas
+      let totalMasuk = 0;
+      let totalKeluar = 0;
+      filtered.forEach(t => {
