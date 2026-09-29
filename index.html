@@ -4,7 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keuangan Rosyid</title>
-    <!-- Memuat Chart.js untuk Grafik -->
+    
+    <!-- LINK PENGHUBUNG SISTEM PWA RESMI -->
+    <link rel="manifest" href="./manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('PWA Keuangan Rosyid Siap!', reg))
+                    .catch(err => console.log('Gagal memuat PWA', err));
+            });
+        }
+    </script>
+
+    <!-- Memuat Chart.js untuk Grafik Resmi -->
     <script src="https://jsdelivr.net"></script>
     <style>
         * {
@@ -366,12 +379,3 @@
     </div>
 
     <!-- Form Input Data -->
-    <div class="form-card">
-        <h4>Tambah Catatan Keuangan</h4>
-        <form id="finance-form" onsubmit="saveTransaction(event)">
-            <div class="form-group">
-                <label>Jenis Catatan</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="type" value="in" checked> Pemasukan (Hijau)
-                    </label>
