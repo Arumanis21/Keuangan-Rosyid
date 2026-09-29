@@ -1,340 +1,377 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Keuangan Rosyid</title>
-  <link rel="manifest" href="manifest.json">
-  <!-- Pustaka Chart.js untuk grafik tren naik-turun -->
-  <script src="https://jsdelivr.net"></script>
-  <style>
-    :root { 
-      --primary: #004d40; 
-      --bg: #f4f7f6; 
-      --text: #333; 
-    }
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      margin: 0; 
-      background: var(--bg); 
-      color: var(--text); 
-      padding-bottom: 30px; 
-    }
-    .header { 
-      background: var(--primary); 
-      color: white; 
-      padding: 25px 20px; 
-      border-bottom-left-radius: 20px; 
-      border-bottom-right-radius: 20px; 
-      text-align: center; 
-    }
-    .header h1 { 
-      margin: 0; 
-      font-size: 22px; 
-    }
-    .header p { 
-      margin: 5px 0 0; 
-      font-size: 14px; 
-      opacity: 0.8; 
-    }
-    
-    .container { 
-      padding: 15px; 
-      max-width: 500px; 
-      margin: auto; 
-    }
-    
-    /* Tombol Navigasi Filter Waktu */
-    .filter-nav { 
-      display: flex; 
-      justify-content: space-between; 
-      margin-bottom: 15px; 
-      background: white; 
-      padding: 5px; 
-      border-radius: 10px; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-    }
-    .filter-nav button { 
-      flex: 1; 
-      background: none; 
-      border: none; 
-      padding: 10px; 
-      font-weight: bold; 
-      color: #666; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      transition: 0.3s; 
-    }
-    .filter-nav button.active { 
-      background: var(--primary); 
-      color: white; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keuangan Rosyid</title>
+    <!-- Memuat Chart.js untuk Grafik -->
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    /* 2 Kotak Utama Totalan */
-    .grid-summary { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr; 
-      gap: 12px; 
-      margin-bottom: 20px; 
-    }
-    .card { 
-      background: white; 
-      padding: 15px; 
-      border-radius: 12px; 
-      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
-      text-align: center; 
-      border-top: 4px solid #ccc; 
-    }
-    .card.masuk { border-top-color: #2ecc71; }
-    .card.keluar { border-top-color: #e74c3c; }
-    .card h3 { 
-      margin: 0; 
-      font-size: 13px; 
-      color: #777; 
-      text-transform: uppercase; 
-    }
-    .card p { 
-      margin: 8px 0 0; 
-      font-size: 16px; 
-      font-weight: bold; 
-      color: #222; 
-    }
+        body {
+            background-color: #f7f7f7;
+            color: #1a1a1a;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-    /* Area Grafik & Analisis Otomatis */
-    .analysis-section { 
-      background: white; 
-      padding: 15px; 
-      border-radius: 12px; 
-      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
-      margin-bottom: 20px; 
-      display: none; 
-    }
-    .analysis-text { 
-      background: #e8f5e9; 
-      padding: 12px; 
-      border-radius: 8px; 
-      font-size: 13px; 
-      color: #2e7d32; 
-      line-height: 1.5; 
-      margin-top: 15px; 
-      border-left: 4px solid #2e7d32; 
-    }
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
 
-    /* Judul Bagian */
-    .section-title { 
-      font-size: 16px; 
-      font-weight: bold; 
-      margin: 20px 0 10px; 
-      color: var(--primary); 
-    }
-    
-    /* Formulir Input Transaksi */
-    .form-group { 
-      background: white; 
-      padding: 15px; 
-      border-radius: 12px; 
-      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
-      margin-bottom: 20px; 
-    }
-    .form-group label { 
-      display: block; 
-      font-size: 13px; 
-      font-weight: bold; 
-      margin-bottom: 5px; 
-      color: #555; 
-    }
-    .form-group input, .form-group select { 
-      width: 100%; 
-      padding: 10px; 
-      margin-bottom: 12px; 
-      border: 1px solid #ddd; 
-      border-radius: 8px; 
-      box-sizing: border-box; 
-    }
-    .btn-submit { 
-      width: 100%; 
-      background: var(--primary); 
-      color: white; 
-      border: none; 
-      padding: 12px; 
-      border-radius: 8px; 
-      font-weight: bold; 
-      cursor: pointer; 
-      font-size: 15px; 
-    }
-    
-    /* List Riwayat Transaksi */
-    .transaction-list { 
-      background: white; 
-      padding: 10px; 
-      border-radius: 12px; 
-      box-shadow: 0 3px 8px rgba(0,0,0,0.05); 
-    }
-    .item-tr { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
-      padding: 12px 8px; 
-      border-bottom: 1px solid #eee; 
-      font-size: 14px; 
-    }
-    .item-tr:last-child { border-bottom: none; }
-    .item-tr .desc { font-weight: 500; }
-    .item-tr .date { font-size: 11px; color: #999; margin-top: 2px; }
-    .item-tr .amount.masuk { color: #2ecc71; font-weight: bold; }
-    .item-tr .amount.keluar { color: #e74c3c; font-weight: bold; }
-    .btn-delete {
-      background: none;
-      border: none;
-      color: #e74c3c;
-      cursor: pointer;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-    .empty-state { 
-      text-align: center; 
-      color: #999; 
-      padding: 20px; 
-      font-size: 14px; 
-    }
-  </style>
+        /* Header Info Waktu */
+        .header-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8e8e93;
+            margin-bottom: 20px;
+        }
+
+        /* Card Sapaan */
+        .welcome-card {
+            background: #ffffff;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .avatar-box {
+            background: #f2f2f7;
+            padding: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-text h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .welcome-text p {
+            font-size: 13px;
+            color: #8e8e93;
+            margin-top: 2px;
+        }
+
+        /* Section Ringkasan & Tab */
+        .section-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+
+        .section-title-bar h3 {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.3;
+            max-width: 50%;
+        }
+
+        .tabs {
+            display: flex;
+            background: #e5e5ea;
+            padding: 2px;
+            border-radius: 8px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #8e8e93;
+            cursor: pointer;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: #1a1a1a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Filter Bulan Dropdown */
+        .month-filter-container {
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .month-filter-container select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #e5e5ea;
+            background-color: #ffffff;
+            font-size: 14px;
+        }
+
+        /* Grid Kotak Keuangan */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            padding: 14px;
+            border-bottom: 4px solid #8e8e93;
+        }
+
+        .stat-card.in { border-bottom-color: #34c759; }
+        .stat-card.out { border-bottom-color: #ff3b30; }
+
+        .stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #8e8e93;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Grafik Area */
+        .chart-container {
+            margin-bottom: 24px;
+            display: none;
+            background: #ffffff;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        /* Form Input */
+        .form-card {
+            background: #ffffff;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #8e8e93;
+            margin-bottom: 6px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 6px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e5ea;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #1a1a1a;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background: #333333;
+        }
+
+        /* Riwayat Transaksi */
+        .history-section h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            background: #fafafa;
+            border: 1px solid #e5e5ea;
+        }
+
+        .tx-info h5 {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .tx-info span {
+            font-size: 11px;
+            color: #8e8e93;
+        }
+
+        .tx-amount-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tx-amount {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .tx-amount.in { color: #34c759; }
+        .tx-amount.out { color: #ff3b30; }
+
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #ff3b30;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .no-data {
+            font-size: 12px;
+            color: #8e8e93;
+            text-align: center;
+            padding: 20px 0;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Bagian Header Utama -->
-  <div class="header">
-    <h1 id="greeting-text">Selamat, Rosyid</h1>
-    <p>Selamat menabung, pria tangguh</p>
-  </div>
-
-  <div class="container">
-    <!-- Filter Navigasi Waktu -->
-    <div class="filter-nav">
-      <button id="btn-hari" class="active" onclick="switchFilter('hari')">Hari</button>
-      <button id="btn-bulan" onclick="switchFilter('bulan')">Bulan</button>
-      <button id="btn-semua" onclick="switchFilter('semua')">Semua</button>
+<div class="app-container">
+    <!-- Meta Tanggal & Jam -->
+    <div class="header-meta">
+        <span id="meta-date">-</span>
+        <span id="meta-time">-</span>
     </div>
 
-    <!-- Tampilan 2 Kotak Saldo -->
-    <div class="grid-summary">
-      <div class="card masuk">
-        <h3>Total Uang Masuk</h3>
-        <p id="total-masuk">Rp 0</p>
-      </div>
-      <div class="card keluar">
-        <h3>Total Uang Keluar</h3>
-        <p id="total-keluar">Rp 0</p>
-      </div>
+    <!-- Sapaan Kartu -->
+    <div class="welcome-card">
+        <div class="avatar-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div class="welcome-text">
+            <h2 id="welcome-greeting">Selamat..., Rosyid!</h2>
+            <p>Selamat menabung, pria tangguh!</p>
+        </div>
     </div>
 
-    <!-- Grafik dan Analisis Tren Bulanan (Hanya aktif ketika tombol 'Semua' diklik) -->
-    <div id="analysis-wrapper" class="analysis-section">
-      <div class="section-title" style="margin-top:0;">Ringkasan Tabungan Masuk dan Keluar</div>
-      <canvas id="trendChart" style="width: 100%; height: 200px;"></canvas>
-      <div id="analysis-text-box" class="analysis-text">
-        Menganalisis pergerakan saldo bulanan Anda...
-      </div>
+    <!-- Judul & Filter Tab -->
+    <div class="section-title-bar">
+        <h3>Ringkasan uang keluar dan masuk</h3>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('hari')">Hari Ini</button>
+            <button class="tab-btn" onclick="switchTab('bulan')">Bulan</button>
+            <button class="tab-btn" onclick="switchTab('semua')">Semua</button>
+        </div>
     </div>
 
-    <!-- Formulir Input Tambah Data -->
-    <div class="section-title">Tambah Transaksi</div>
-    <div class="form-group">
-      <form id="tx-form" onsubmit="saveTransaction(event)">
-        <label>Tanggal</label>
-        <input type="date" id="tx-date" required>
-        
-        <label>Jenis</label>
-        <select id="tx-type">
-          <option value="masuk">💰 Uang Masuk (+)</option>
-          <option value="keluar">💸 Uang Keluar (-)</option>
+    <!-- Dropdown Filter Bulan -->
+    <div class="month-filter-container" id="month-filter-box">
+        <select id="month-select" onchange="renderApp()">
+            <!-- Akan diisi otomatis oleh JavaScript -->
         </select>
-        
-        <label>Keterangan</label>
-        <input type="text" id="tx-desc" placeholder="Contoh: Gaji bulanan, Jajan sore" required>
-        
-        <label>Nominal (Rp)</label>
-        <input type="number" id="tx-nominal" placeholder="Contoh: 1.205.000" required>
-        
-        <button type="submit" class="btn-submit">Simpan Transaksi</button>
-      </form>
     </div>
 
-    <!-- Riwayat Data Log Transaksi -->
-    <div class="section-title">Data Transaksi Riwayat</div>
-    <div id="transaction-container" class="transaction-list">
-      <!-- Data log harian otomatis muncul di sini -->
+    <!-- Kotak Ringkasan Utama -->
+    <div class="summary-grid">
+        <div class="stat-card in">
+            <div class="stat-label">Total Pemasukan</div>
+            <div class="stat-value" id="total-in">Rp 0</div>
+        </div>
+        <div class="stat-card out">
+            <div class="stat-label">Total Pengeluaran</div>
+            <div class="stat-value" id="total-out">Rp 0</div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW Registered'))
-          .catch(err => console.log('SW Failed', err));
-      });
-    }
+    <!-- Area Grafik Line Chart -->
+    <div class="chart-container" id="chart-box">
+        <canvas id="financialChart"></canvas>
+    </div>
 
-    // Inisialisasi Database Internal Browser (LocalStorage)
-    let transactions = JSON.parse(localStorage.getItem('rosyid_finance_data')) || [];
-    let currentFilter = 'hari';
-    let myChart = null;
-
-    // 1. Fungsi Mengatur Ucapan Sesuai Waktu HP
-    function initGreeting() {
-      const hours = new Date().getHours();
-      let greeting = "Selamat Malam, Rosyid";
-      
-      if (hours >= 5 && hours < 11) greeting = "Selamat Pagi, Rosyid";
-      else if (hours >= 11 && hours < 15) greeting = "Selamat Siang, Rosyid";
-      else if (hours >= 15 && hours < 18) greeting = "Selamat Sore, Rosyid";
-      
-      document.getElementById('greeting-text').innerText = greeting;
-      document.getElementById('tx-date').valueAsDate = new Date();
-    }
-
-    // 2. Format Konversi ke Mata Uang Rupiah
-    function formatRupiah(angka) {
-      return 'Rp ' + parseInt(angka).toLocaleString('id-ID');
-    }
-
-    // 3. Fungsi Menyimpan Data Transaksi Baru
-    function saveTransaction(e) {
-      e.preventDefault();
-      const date = document.getElementById('tx-date').value;
-      const type = document.getElementById('tx-type').value;
-      const desc = document.getElementById('tx-desc').value;
-      const nominal = parseFloat(document.getElementById('tx-nominal').value);
-
-      transactions.push({ id: Date.now(), date, type, desc, nominal });
-      localStorage.setItem('rosyid_finance_data', JSON.stringify(transactions));
-      
-      document.getElementById('tx-desc').value = '';
-      document.getElementById('tx-nominal').value = '';
-      
-      renderDashboard();
-    }
-
-    // Fungsi Tambahan untuk Hapus Transaksi
-    function deleteTransaction(id) {
-      transactions = transactions.filter(t => t.id !== id);
-      localStorage.setItem('rosyid_finance_data', JSON.stringify(transactions));
-      renderDashboard();
-    }
-
-    // 4. Logika Pengendali Tombol Navigasi Filter
-    function switchFilter(filterType) {
-      currentFilter = filterType;
-      document.querySelectorAll('.filter-nav button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(`btn-${filterType}`).classList.add('active');
-      renderDashboard();
-    }
-
-    // 5. Fungsi Render Menampilkan Komponen Data di Layar
-    function renderDashboard() {
-      const todayObj = new Date();
-      const todayStr = todayObj.toISOString().split('T')[0]; 
-      const thisMonthStr = todayStr.substring(0, 7); 
-      
-      let filtered = [];
+    <!-- Form Input Data -->
+    <div class="form-card">
+        <h4>Tambah Catatan Keuangan</h4>
+        <form id="finance-form" onsubmit="saveTransaction(event)">
+            <div class="form-group">
+                <label>Jenis Catatan</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="type" value="in" checked> Pemasukan (Hijau)
+                    </label>
