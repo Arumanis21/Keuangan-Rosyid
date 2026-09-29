@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keuangan Rosyid</title>
-    
-    <!-- LINK PENGHUBUNG SISTEM PWA RESMI -->
     <link rel="manifest" href="./manifest.json">
     <script>
         if ('serviceWorker' in navigator) {
@@ -16,335 +14,59 @@
             });
         }
     </script>
-
-    <!-- Memuat Chart.js untuk Grafik Resmi -->
     <script src="https://jsdelivr.net"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f7f7f7;
-            color: #1a1a1a;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            background: #ffffff;
-            min-height: 100vh;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        /* Header Info Waktu */
-        .header-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #8e8e93;
-            margin-bottom: 20px;
-        }
-
-        /* Card Sapaan */
-        .welcome-card {
-            background: #ffffff;
-            border: 1px solid #e5e5ea;
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .avatar-box {
-            background: #f2f2f7;
-            padding: 10px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .welcome-text h2 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        .welcome-text p {
-            font-size: 13px;
-            color: #8e8e93;
-            margin-top: 2px;
-        }
-
-        /* Section Ringkasan & Tab */
-        .section-title-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-            gap: 12px;
-        }
-
-        .section-title-bar h3 {
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.3;
-            max-width: 50%;
-        }
-
-        .tabs {
-            display: flex;
-            background: #e5e5ea;
-            padding: 2px;
-            border-radius: 8px;
-        }
-
-        .tab-btn {
-            border: none;
-            background: transparent;
-            padding: 6px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #8e8e93;
-            cursor: pointer;
-            border-radius: 6px;
-            text-transform: uppercase;
-        }
-
-        .tab-btn.active {
-            background: #ffffff;
-            color: #1a1a1a;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Filter Bulan Dropdown */
-        .month-filter-container {
-            margin-bottom: 16px;
-            display: none;
-        }
-
-        .month-filter-container select {
-            width: 100%;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #e5e5ea;
-            background-color: #ffffff;
-            font-size: 14px;
-        }
-
-        /* Grid Kotak Keuangan */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: #ffffff;
-            border: 1px solid #e5e5ea;
-            border-radius: 12px;
-            padding: 14px;
-            border-bottom: 4px solid #8e8e93;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #f7f7f7; color: #1a1a1a; padding: 20px; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 480px; background: #ffffff; min-height: 100vh; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .header-meta { display: flex; justify-content: space-between; font-size: 12px; color: #8e8e93; margin-bottom: 20px; }
+        .welcome-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .avatar-box { background: #f2f2f7; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .welcome-text h2 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+        .welcome-text p { font-size: 13px; color: #8e8e93; margin-top: 2px; }
+        .section-title-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; }
+        .section-title-bar h3 { font-size: 18px; font-weight: 700; line-height: 1.3; max-width: 50%; }
+        .tabs { display: flex; background: #e5e5ea; padding: 2px; border-radius: 8px; }
+        .tab-btn { border: none; background: transparent; padding: 6px 12px; font-size: 11px; font-weight: 600; color: #8e8e93; cursor: pointer; border-radius: 6px; text-transform: uppercase; }
+        .tab-btn.active { background: #ffffff; color: #1a1a1a; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .month-filter-container { margin-bottom: 16px; display: none; }
+        .month-filter-container select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #e5e5ea; background-color: #ffffff; font-size: 14px; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .stat-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 14px; border-bottom: 4px solid #8e8e93; }
         .stat-card.in { border-bottom-color: #34c759; }
         .stat-card.out { border-bottom-color: #ff3b30; }
-
-        .stat-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            color: #8e8e93;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a1a1a;
-        }
-
-        /* Grafik Area */
-        .chart-container {
-            margin-bottom: 24px;
-            display: none;
-            background: #ffffff;
-            border: 1px solid #e5e5ea;
-            border-radius: 12px;
-            padding: 12px;
-        }
-
-        /* Form Input */
-        .form-card {
-            background: #ffffff;
-            border: 1px solid #e5e5ea;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .form-card h4 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #8e8e93;
-            margin-bottom: 6px;
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 6px;
-        }
-
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e5e5ea;
-            border-radius: 8px;
-            font-size: 13px;
-            background: #fafafa;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #1a1a1a;
-            background: #ffffff;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: #1a1a1a;
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .btn-submit:hover {
-            background: #333333;
-        }
-
-        /* Riwayat Transaksi */
-        .history-section h4 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .transaction-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-radius: 8px;
-            background: #fafafa;
-            border: 1px solid #e5e5ea;
-        }
-
-        .tx-info h5 {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .tx-info span {
-            font-size: 11px;
-            color: #8e8e93;
-        }
-
-        .tx-amount-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .tx-amount {
-            font-size: 14px;
-            font-weight: 700;
-        }
-
+        .stat-label { font-size: 10px; text-transform: uppercase; color: #8e8e93; font-weight: 600; margin-bottom: 6px; }
+        .stat-value { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+        .chart-container { margin-bottom: 24px; display: none; background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 12px; }
+        .form-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+        .form-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; color: #8e8e93; margin-bottom: 6px; }
+        .radio-group { display: flex; gap: 16px; margin-bottom: 6px; }
+        .radio-label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #e5e5ea; border-radius: 8px; font-size: 13px; background: #fafafa; }
+        .form-control:focus { outline: none; border-color: #1a1a1a; background: #ffffff; }
+        .btn-submit { width: 100%; background: #1a1a1a; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 8px; }
+        .history-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+        .transaction-list { display: flex; flex-direction: column; gap: 8px; }
+        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 8px; background: #fafafa; border: 1px solid #e5e5ea; }
+        .tx-info h5 { font-size: 13px; font-weight: 600; }
+        .tx-info span { font-size: 11px; color: #8e8e93; }
+        .tx-amount-area { display: flex; align-items: center; gap: 12px; }
+        .tx-amount { font-size: 14px; font-weight: 700; }
         .tx-amount.in { color: #34c759; }
         .tx-amount.out { color: #ff3b30; }
-
-        .btn-delete {
-            background: transparent;
-            border: none;
-            color: #ff3b30;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-        }
-
-        .no-data {
-            font-size: 12px;
-            color: #8e8e93;
-            text-align: center;
-            padding: 20px 0;
-        }
+        .btn-delete { background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 14px; padding: 4px; display: flex; align-items: center; }
+        .no-data { font-size: 12px; color: #8e8e93; text-align: center; padding: 20px 0; }
     </style>
 </head>
 <body>
-
 <div class="app-container">
-    <!-- Meta Tanggal & Jam -->
-    <div class="header-meta">
-        <span id="meta-date">-</span>
-        <span id="meta-time">-</span>
-    </div>
-
-    <!-- Sapaan Kartu -->
+    <div class="header-meta"><span id="meta-date">-</span><span id="meta-time">-</span></div>
     <div class="welcome-card">
-        <div class="avatar-box">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        </div>
-        <div class="welcome-text">
-            <h2 id="welcome-greeting">Selamat..., Rosyid!</h2>
-            <p>Selamat menabung, pria tangguh!</p>
-        </div>
+        <div class="avatar-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+        <div class="welcome-text"><h2 id="welcome-greeting">Selamat..., Rosyid!</h2><p>Selamat menabung, pria tangguh!</p></div>
     </div>
-
-    <!-- Judul & Filter Tab -->
     <div class="section-title-bar">
         <h3>Ringkasan uang keluar dan masuk</h3>
         <div class="tabs">
@@ -353,29 +75,149 @@
             <button class="tab-btn" onclick="switchTab('semua')">Semua</button>
         </div>
     </div>
-
-    <!-- Dropdown Filter Bulan -->
-    <div class="month-filter-container" id="month-filter-box">
-        <select id="month-select" onchange="renderApp()">
-            <!-- Akan diisi otomatis oleh JavaScript -->
-        </select>
-    </div>
-
-    <!-- Kotak Ringkasan Utama -->
+    <div class="month-filter-container" id="month-filter-box"><select id="month-select" onchange="renderApp()"></select></div>
     <div class="summary-grid">
-        <div class="stat-card in">
-            <div class="stat-label">Total Pemasukan</div>
-            <div class="stat-value" id="total-in">Rp 0</div>
-        </div>
-        <div class="stat-card out">
-            <div class="stat-label">Total Pengeluaran</div>
-            <div class="stat-value" id="total-out">Rp 0</div>
-        </div>
+        <div class="stat-card in"><div class="stat-label">Total Pemasukan</div><div class="stat-value" id="total-in">Rp 0</div></div>
+        <div class="stat-card out"><div class="stat-label">Total Pengeluaran</div><div class="stat-value" id="total-out">Rp 0</div></div>
     </div>
-
-    <!-- Area Grafik Line Chart -->
-    <div class="chart-container" id="chart-box">
-        <canvas id="financialChart"></canvas>
+    <div class="chart-container" id="chart-box"><canvas id="financialChart"></canvas></div>
+    <div class="form-card">
+        <h4>Tambah Catatan Keuangan</h4>
+        <form id="finance-form" onsubmit="saveTransaction(event)">
+            <div class="form-group">
+                <label>Jenis Catatan</label>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="type" value="in" checked> Pemasukan (Hijau)</label>
+                    <label class="radio-label"><input type="radio" name="type" value="out"> Pengeluaran (Merah)</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Keterangan / Keperluan</label>
+                <input type="text" id="desc" class="form-control" placeholder="Contoh: Gaji bulanan, Beli kopi" required>
+            </div>
+            <div class="form-group">
+                <label>Jumlah Uang (Rp)</label>
+                <input type="number" id="amount" class="form-control" placeholder="Contoh: 50000" required>
+            </div>
+            <div class="form-group">
+                <label>Tanggal</label>
+                <input type="date" id="date" class="form-control" required>
+            </div>
+            <button type="submit" class="btn-submit">Simpan Catatan</button>
+        </form>
     </div>
+    <div class="history-section">
+        <h4>Riwayat Transaksi</h4>
+        <div class="transaction-list" id="transaction-container"></div>
+    </div>
+</div>
+<script>
+    let transactions = JSON.parse(localStorage.getItem('rosyid_finance_data')) || [];
+    let currentTab = 'hari'; let myChart = null;
+    const hariIni = new Date();
+    const opsiTanggal = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('meta-date').innerText = hariIni.toLocaleDateString('id-ID', opsiTanggal);
+    document.getElementById('date').value = hariIni.toISOString().split('T')[0];
 
-    <!-- Form Input Data -->
+    function updateClockAndGreeting() {
+        const sekarang = new Date();
+        document.getElementById('meta-time').innerText = sekarang.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) + ' WIB';
+        const jam = sekarang.getHours(); let sapaan = "Selamat Malam";
+        if (jam >= 5 && jam < 11) sapaan = "Selamat Pagi";
+        else if (jam >= 11 && jam < 15) sapaan = "Selamat Siang";
+        else if (jam >= 15 && jam < 18) sapaan = "Selamat Sore";
+        document.getElementById('welcome-greeting').innerText = `${sapaan}, Rosyid!`;
+    }
+    setInterval(updateClockAndGreeting, 1000); updateClockAndGreeting();
+
+    function populateMonthDropdown() {
+        const select = document.getElementById('month-select'); select.innerHTML = '';
+        const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const tahunSekarang = new Date().getFullYear();
+        for(let i = 0; i < 12; i++) {
+            let option = document.createElement('option');
+            option.value = `${tahunSekarang}-${String(i+1).padStart(2, '0')}`;
+            option.text = `${namaBulan[i]} ${tahunSekarang}`;
+            if(i === new Date().getMonth()) option.selected = true;
+            select.appendChild(option);
+        }
+    }
+    populateMonthDropdown();
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        if (event && event.target) event.target.classList.add('active');
+        document.getElementById('month-filter-box').style.display = (tab === 'bulan') ? 'block' : 'none';
+        document.getElementById('chart-box').style.display = (tab === 'semua') ? 'block' : 'none';
+        renderApp();
+    }
+
+    function formatRupiah(angka) { return 'Rp ' + parseFloat(angka).toLocaleString('id-ID'); }
+
+    function saveTransaction(e) {
+        e.preventDefault();
+        const type = document.querySelector('input[name="type"]:checked').value;
+        const desc = document.getElementById('desc').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+        const date = document.getElementById('date').value;
+        const newTx = { id: Date.now(), type, desc, amount, date };
+        transactions.push(newTx); localStorage.setItem('rosyid_finance_data', JSON.stringify(transactions));
+        document.getElementById('desc').value = ''; document.getElementById('amount').value = '';
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        renderApp();
+    }
+
+    function deleteTransaction(id) {
+        if(confirm("Hapus catatan ini?")) {
+            transactions = transactions.filter(tx => tx.id !== id);
+            localStorage.setItem('rosyid_finance_data', JSON.stringify(transactions));
+            renderApp();
+        }
+    }
+
+    function renderApp() {
+        const container = document.getElementById('transaction-container'); container.innerHTML = '';
+        let filtered = []; const hariIniStr = new Date().toISOString().split('T')[0];
+        if (currentTab === 'hari') { filtered = transactions.filter(tx => tx.date === hariIniStr); }
+        else if (currentTab === 'bulan') { const selectedMonth = document.getElementById('month-select').value; filtered = transactions.filter(tx => tx.date.startsWith(selectedMonth)); }
+        else { filtered = [...transactions]; filtered.sort((a,b) => new Date(a.date) - new Date(b.date)); }
+        let totalIn = 0; let totalOut = 0;
+        if (filtered.length === 0) { container.innerHTML = `<div class="no-data">Belum ada catatan keuangan pada periode ini.</div>`; }
+        else {
+            filtered.forEach(tx => {
+                if (tx.type === 'in') totalIn += tx.amount; else totalOut += tx.amount;
+                const item = document.createElement('div'); item.className = 'transaction-item';
+                const dateObj = new Date(tx.date); const tglRapi = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                item.innerHTML = `<div class="tx-info"><h5>${tx.desc}</h5><span>${tglRapi}</span></div><div class="tx-amount-area"><span class="tx-amount ${tx.type}">${tx.type === 'in' ? '+' : '-'} ${formatRupiah(tx.amount)}</span><button class="btn-delete" onclick="deleteTransaction(${tx.id})">✕</button></div>`;
+                container.prepend(item);
+            });
+        }
+        document.getElementById('total-in').innerText = formatRupiah(totalIn);
+        document.getElementById('total-out').innerText = formatRupiah(totalOut);
+        if (currentTab === 'semua') { updateChartData(); }
+    }
+
+    function updateChartData() {
+        let dataPerTanggal = {};
+        transactions.forEach(tx => {
+            if(!dataPerTanggal[tx.date]) dataPerTanggal[tx.date] = { in: 0, out: 0 };
+            dataPerTanggal[tx.date][tx.type] += tx.amount;
+        });
+        const urutanTanggal = Object.keys(dataPerTanggal).sort((a,b) => new Date(a) - new Date(b));
+        const datasetIn = urutanTanggal.map(tgl => dataPerTanggal[tgl].in);
+        const datasetOut = urutanTanggal.map(tgl => dataPerTanggal[tgl].out);
+        const labelGrafik = urutanTanggal.map(tgl => new Date(tgl).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}));
+        if (myChart) myChart.destroy();
+        const canvas = document.getElementById('financialChart'); if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labelGrafik, datasets: [{ label: 'Masuk (Rp)', data: datasetIn, borderColor: '#34c759', backgroundColor: 'transparent', borderWidth: 2, tension: 0.2 }, { label: 'Keluar (Rp)', data: datasetOut, borderColor: '#ff3b30', backgroundColor: 'transparent', borderWidth: 2, tension: 0.2 }] },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    }
+    renderApp();
+</script>
+</body>
+</html>
